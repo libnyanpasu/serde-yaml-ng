@@ -11,6 +11,7 @@ use std::mem;
 
 /// A YAML mapping in which the keys and values are both `serde_yaml_ng::Value`.
 #[derive(Clone, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Mapping {
     map: IndexMap<Value, Value>,
 }

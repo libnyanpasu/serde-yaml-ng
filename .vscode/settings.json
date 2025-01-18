@@ -1,0 +1,4 @@
+{
+    "rust-analyzer.showSyntaxTree": true,
+    "rust-analyzer.cargo.features": "all"
+}
