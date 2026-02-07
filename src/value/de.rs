@@ -203,8 +203,10 @@ impl<'de> Deserializer<'de> for Value {
     where
         V: Visitor<'de>,
     {
-        let is_serde_value = std::any::type_name::<V::Value>()
-            == std::any::type_name::<serde::__private::de::Content>();
+        let is_serde_value = {
+            let name = std::any::type_name::<V::Value>();
+            name.starts_with("serde::") && name.ends_with("::de::Content")
+        };
         match self {
             Value::Null => visitor.visit_unit(),
             Value::Bool(v) => visitor.visit_bool(v),
@@ -725,8 +727,10 @@ impl<'de> Deserializer<'de> for &'de Value {
     where
         V: Visitor<'de>,
     {
-        let is_serde_content = std::any::type_name::<V::Value>()
-            == std::any::type_name::<serde::__private::de::Content>();
+        let is_serde_content = {
+            let name = std::any::type_name::<V::Value>();
+            name.starts_with("serde::") && name.ends_with("::de::Content")
+        };
         match self {
             Value::Null => visitor.visit_unit(),
             Value::Bool(v) => visitor.visit_bool(*v),

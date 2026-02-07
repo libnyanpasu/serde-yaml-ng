@@ -800,18 +800,18 @@ impl<'de> de::MapAccess<'de> for EnumAccess<'de, '_, '_> {
     where
         V: DeserializeSeed<'de>,
     {
-        let mut de = DeserializerFromEvents {  
-            document: self.de.document,  
-            pos: self.de.pos,  
-            jumpcount: self.de.jumpcount,  
-            path: self.de.path,  
-            remaining_depth: self.de.remaining_depth,  
-            current_enum: Some(CurrentEnum {  
-                name: self.name,  
-                tag: self.tag,  
-            }),  
-            is_serde_content_newtype: true,  
-        };  
+        let mut de = DeserializerFromEvents {
+            document: self.de.document,
+            pos: self.de.pos,
+            jumpcount: self.de.jumpcount,
+            path: self.de.path,
+            remaining_depth: self.de.remaining_depth,
+            current_enum: Some(CurrentEnum {
+                name: self.name,
+                tag: self.tag,
+            }),
+            is_serde_content_newtype: true,
+        };
         seed.deserialize(&mut de)
     }
 }
@@ -1270,8 +1270,10 @@ impl<'de> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, '_> {
         }
         // TODO: switch to JSON enum semantics for JSON content
         // Robust impl blocked on https://github.com/serde-rs/serde/pull/2420
-        let is_serde_content =
-            std::any::type_name::<V::Value>() == std::any::type_name::<serde::__private::de::Content>();
+        let is_serde_content = {
+            let name = std::any::type_name::<V::Value>();
+            name.starts_with("serde::") && name.ends_with("::de::Content")
+        };
 
         let old_serde_content_newtype = mem::replace(&mut self.is_serde_content_newtype, false);
         loop {
