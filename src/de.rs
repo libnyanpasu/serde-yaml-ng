@@ -1272,7 +1272,11 @@ impl<'de> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, '_> {
         // Robust impl blocked on https://github.com/serde-rs/serde/pull/2420
         let is_serde_content = {
             let name = std::any::type_name::<V::Value>();
-            name.starts_with("serde::") && name.ends_with("::de::Content")
+            // serde < 1.0.228: "serde::__private::de::Content"
+            // serde >= 1.0.228: "serde_core::private::content::Content<'_>"
+            name.starts_with("serde")
+                && (name.ends_with("::de::Content")
+                    || name.contains("::content::Content"))
         };
 
         let old_serde_content_newtype = mem::replace(&mut self.is_serde_content_newtype, false);

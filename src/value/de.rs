@@ -205,7 +205,9 @@ impl<'de> Deserializer<'de> for Value {
     {
         let is_serde_value = {
             let name = std::any::type_name::<V::Value>();
-            name.starts_with("serde::") && name.ends_with("::de::Content")
+            name.starts_with("serde")
+                && (name.ends_with("::de::Content")
+                    || name.contains("::content::Content"))
         };
         match self {
             Value::Null => visitor.visit_unit(),
@@ -729,7 +731,9 @@ impl<'de> Deserializer<'de> for &'de Value {
     {
         let is_serde_content = {
             let name = std::any::type_name::<V::Value>();
-            name.starts_with("serde::") && name.ends_with("::de::Content")
+            name.starts_with("serde")
+                && (name.ends_with("::de::Content")
+                    || name.contains("::content::Content"))
         };
         match self {
             Value::Null => visitor.visit_unit(),
